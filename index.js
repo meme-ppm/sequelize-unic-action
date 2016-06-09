@@ -3,7 +3,7 @@ var shortId = require("shortid");
 
 
 module.exports.model = {
-  hash: {type:Sequelize.STRING, defaultValue: shortId.generate()},
+  hash: {type:Sequelize.STRING, defaultValue: shortId.generate(), primaryKey: true},
   action: {type:Sequelize.STRING, allowNull: false},
   limitDateValidity: {type: Sequelize.DATE},
   isUsed:{type: Sequelize.BOOLEAN, defaultValue:false}
