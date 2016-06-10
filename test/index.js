@@ -13,8 +13,8 @@ describe("Test unic action >>", function(){
       });
    })
    it('create a valid action and redeem an action', function () {
-     return UnicAction.createHash({action:"validateEmail", duration:1000*60*10}).then(function(result){
-       should.exist(result);
+     return UnicAction.create({action:"validateEmail", duration:1000*60*10, limitDateValidity:null}).then(function(result){
+       should.exist(result, 'create unic action ok');
        result.should.be.an('object');
        assert.equal(result.isUsed, false);
       return UnicAction.findHash(result.hash);
@@ -26,11 +26,20 @@ describe("Test unic action >>", function(){
       result.should.be.an('object');
       assert.equal(result.isUsed, true);
     }).catch(function(error){
+       console.log("error : ", error);
        should.not.exist(error);
      });
    })
+    it('create an action with default time', function () {
+     return UnicAction.create({action:'validateEmail'}).then(function(result){
+       should.not.exist(result);
+     }).catch(function(error){
+       should.exist(error);
+     });
+   })
+
    it('create an empty/wrong action', function () {
-     return UnicAction.createHash({duration:1000*60*10}).then(function(result){
+     return UnicAction.create({duration:1000*60*10}).then(function(result){
        should.not.exist(result);
      }).catch(function(error){
        should.exist(error);

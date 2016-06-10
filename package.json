@@ -1,6 +1,6 @@
 {
   "name": "sequelize-unic-action",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "manage a table of unic action that could be usefull par exemple for a user email validation or a user email reseting",
   "main": "index.js",
   "scripts": {
