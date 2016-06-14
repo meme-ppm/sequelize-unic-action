@@ -1,9 +1,9 @@
 var Sequelize = require('sequelize');
-var shortId = require("shortid");
+var uuid = require("uuid");
 
 
 module.exports.model = {
-  hash: {type:Sequelize.STRING, defaultValue: shortId.generate(), primaryKey: true},
+  hash: {type:Sequelize.STRING, primaryKey: true},
   action: {type:Sequelize.STRING, allowNull: false},
   duration: {type:Sequelize.INTEGER, defaultValue: 1000 * 60 * 60 * 24},
   limitDateValidity: {type: Sequelize.DATE},
@@ -13,6 +13,7 @@ module.exports.model = {
 module.exports.methods={
   hooks: {
     beforeValidate: function(unicAction, options) {
+      unicAction.hash = uuid.v4();
       unicAction.limitDateValidity =  new Date(new Date().getTime() + unicAction.duration);
     }
   },
@@ -28,6 +29,17 @@ module.exports.methods={
     },
     hashIsUsed: function(hash){
       return this.update({isUsed:true}, {where:{hash:hash}});
+    },
+    validateHash:function(hash){
+      return this.findHash(hash).then(function(result){
+        if(result){
+          return result.hashIsUsed().then(function(){
+            return true;
+          })
+        }
+        return false;
+      });
+
     }
   },
   instanceMethods:{
