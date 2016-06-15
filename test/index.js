@@ -2,8 +2,8 @@ var assert = require('chai').assert;
 var should = require('chai').should();
 var Sequelize = require('sequelize');
 var db = new Sequelize('postgresql://test1:test1@localhost/test1');
-var unicActionModel = require('../index.js');
-var UnicAction = db.define('unic', unicActionModel.model, unicActionModel.methods);
+var UnicActionModel = require('../index.js');
+var UnicAction = db.define('unic', UnicActionModel.model, UnicActionModel.methods);
 
 
 describe("Test unic action >>", function(){
@@ -61,12 +61,30 @@ describe("Test unic action >>", function(){
      });
    })
 
-   it('create an empty/wrong action', function () {
-     return UnicAction.create({duration:1000*60*10}).then(function(result){
-       should.not.exist(result);
-     }).catch(function(error){
-       should.exist(error);
-     });
+   it('test generateWhereFromHash - hash', function () {
+     var hash = "fdjqhdkjh";
+     var where = UnicActionModel.generateWhereFromHash(hash);
+     should.exist(where);
+     assert.equal(where.hash, hash);
+     assert.equal("action" in where, false);
    })
+
+   it('test generateWhereFromHash - hash and action', function () {
+     var hash = "fdjqhdkjh";
+     var action = "beautifullaction"
+     var where = UnicActionModel.generateWhereFromHash(hash, action);
+     should.exist(where);
+     assert.equal(where.hash, hash);
+     assert.equal(where.action, action);
+   })
+
+   it('test generateWhereFromHash - empty hash should generate exception', function () {
+     try{
+       UnicActionModel.generateWhereFromHash();
+     }catch(error){
+        should.exist(error);
+     }
+   })
+
 
 })

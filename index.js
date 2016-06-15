@@ -1,6 +1,20 @@
 var Sequelize = require('sequelize');
 var uuid = require("uuid");
 
+var generateWhereFromHash = function(hash, action){
+  if(!hash){
+    throw new Squelize.ValidationError("hash.notDefined");
+  }
+  var where = {
+            hash:hash,
+            limitDateValidity: {$gt: Date.now()},
+            isUsed:false
+          }
+  if(action){
+    where.action = action;
+  }
+  return where;
+}
 
 module.exports.model = {
   hash: {type:Sequelize.STRING, primaryKey: true},
@@ -10,6 +24,8 @@ module.exports.model = {
   isUsed:{type: Sequelize.BOOLEAN, defaultValue:false}
 }
 
+module.exports.generateWhereFromHash = generateWhereFromHash;
+
 module.exports.methods={
   hooks: {
     beforeValidate: function(unicAction, options) {
@@ -18,20 +34,16 @@ module.exports.methods={
     }
   },
   classMethods:{
-    findHash: function(hash){
+    findHash: function(hash, action){
       return this.findOne({
-                    where: {
-                              hash:hash,
-                              limitDateValidity: {$gt: Date.now()},
-                              isUsed:false
-                            }
+                    where: generateWhereFromHash(hash, action)
                   });
     },
     hashIsUsed: function(hash){
       return this.update({isUsed:true}, {where:{hash:hash}});
     },
-    validateHash:function(hash){
-      return this.findHash(hash).then(function(result){
+    validateHash:function(hash, action){
+      return this.findHash(hash, action).then(function(result){
         if(result){
           return result.hashIsUsed().then(function(){
             return true;
