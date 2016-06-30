@@ -30,7 +30,7 @@ describe("Test unic action >>", function(){
        should.not.exist(error);
      });
    });
-   it('create a valid action and redeem an action with validate', function () {
+   it('create a valid action and redeem an action with validate without action', function () {
      return UnicAction.create({action:"validateEmail", duration:1000*60*10, limitDateValidity:null}).then(function(result){
        should.exist(result, 'create unic action ok');
        result.should.be.an('object');
@@ -45,6 +45,34 @@ describe("Test unic action >>", function(){
        should.not.exist(error);
      });
    });
+   it('create a valid action and redeem an action with validate declaring action', function () {
+     return UnicAction.create({action:"validateEmail", duration:1000*60*10, limitDateValidity:null}).then(function(result){
+       should.exist(result, 'create unic action ok');
+       result.should.be.an('object');
+       assert.equal(result.isUsed, false);
+      return UnicAction.validateHash(result.hash, 'validateEmail');
+    }).then(function(result){
+      should.exist(result);
+      assert.equal(result, true);
+      return result;
+    }).catch(function(error){
+       console.log("error : ", error);
+       should.not.exist(error);
+     });
+   });
+   it('create a valid action and wrong redeem an action with wrong declaring action', function () {
+     return UnicAction.create({action:"validateEmail", duration:1000*60*10, limitDateValidity:null}).then(function(result){
+       should.exist(result, 'create unic action ok');
+       result.should.be.an('object');
+       assert.equal(result.isUsed, false);
+      return UnicAction.validateHash(result.hash, '****');
+    }).then(function(result){
+      should.not.exist(result);
+    }).catch(function(error){
+       console.log("error : ", error);
+       should.exist(error);
+     });
+   });
    it('validate a wrong hash', function () {
      return UnicAction.validateHash("sdsfkhqdkfjhf").then(function(result){
        should.exist(result);
@@ -53,7 +81,7 @@ describe("Test unic action >>", function(){
        should.not.exist(error);
      })
    });
-    it('create an action with default time', function () {
+    it('create an action with the default time', function () {
      return UnicAction.create({action:'validateEmail'}).then(function(result){
        should.not.exist(result);
      }).catch(function(error){

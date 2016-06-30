@@ -16,7 +16,7 @@ var generateWhereFromHash = function(hash, action){
   return where;
 }
 
-module.exports.model = {
+var _model = {
   hash: {type:Sequelize.STRING, primaryKey: true},
   action: {type:Sequelize.STRING, allowNull: false},
   duration: {type:Sequelize.INTEGER, defaultValue: 1000 * 60 * 60 * 24},
@@ -24,9 +24,7 @@ module.exports.model = {
   isUsed:{type: Sequelize.BOOLEAN, defaultValue:false}
 }
 
-module.exports.generateWhereFromHash = generateWhereFromHash;
-
-module.exports.methods={
+var _methods={
   hooks: {
     beforeValidate: function(unicAction, options) {
       unicAction.hash = uuid.v4();
@@ -60,3 +58,9 @@ module.exports.methods={
     }
   }
 }
+
+module.exports.model = _model;
+
+module.exports.methods = _methods;
+
+module.exports.generateWhereFromHash = generateWhereFromHash;
